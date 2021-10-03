@@ -17,10 +17,25 @@ function Get-HomePath() {
     }
 }
 
-function Exit-OnFailure() {
-    if ($LASTEXITCODE -ne 0) {
-        Write-Host "Exiting due to failure" -ForegroundColor Red
-        exit 1
+function Exit-OnFailure {
+    param(
+        [validateset('application','powershell')]
+        [string]
+        $Type = 'application'
+    )
+    switch($Type) {
+        'application' {
+            if ($LASTEXITCODE -ne 0) {
+                Write-Host "Exiting due to failure" -ForegroundColor Red
+                exit 1
+            }
+        }
+        'powershell' {
+            if ($error.count -gt 0) {
+                Write-Host "Exiting due to failure" -ForegroundColor Red
+                exit 1
+            }
+        }
     }
 }
 
@@ -39,8 +54,9 @@ function Write-StepTitle([String] $Message) {
     Write-OutputWithInvertedColors $equals
 }
 Write-StepTitle "I. Installing Python                          "
-powershell "$PSScriptRoot\install-python.ps1"
-Exit-OnFailure
+$Error.Clear()
+& "$PSScriptRoot\install-python.ps1"
+Exit-OnFailure -Type PowerShell
 Update-UserEnvironmentPath
 
 Write-StepTitle "II. Creating self-contained EBCLI installation"
