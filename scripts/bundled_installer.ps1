@@ -17,25 +17,10 @@ function Get-HomePath() {
     }
 }
 
-function Exit-OnFailure {
-    param(
-        [validateset('application','powershell')]
-        [string]
-        $Type = 'application'
-    )
-    switch($Type) {
-        'application' {
-            if ($LASTEXITCODE -ne 0) {
-                Write-Host "Exiting due to failure" -ForegroundColor Red
-                exit 1
-            }
-        }
-        'powershell' {
-            if ($error.count -gt 0) {
-                Write-Host "Exiting due to failure" -ForegroundColor Red
-                exit 1
-            }
-        }
+function Exit-OnFailure() {
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "Exiting due to failure" -ForegroundColor Red
+        exit 1
     }
 }
 
