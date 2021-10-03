@@ -54,9 +54,11 @@ function Write-StepTitle([String] $Message) {
     Write-OutputWithInvertedColors $equals
 }
 Write-StepTitle "I. Installing Python                          "
-$Error.Clear()
-& "$PSScriptRoot\install-python.ps1"
-Exit-OnFailure -Type PowerShell
+try {
+    & "$PSScriptRoot\install-python.ps1"
+} catch {
+    Write-Error "Exiting due to failure" -ErrorAction Stop
+}
 Update-UserEnvironmentPath
 
 Write-StepTitle "II. Creating self-contained EBCLI installation"
