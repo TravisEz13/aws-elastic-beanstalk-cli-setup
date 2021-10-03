@@ -40,7 +40,7 @@ function Get-PythonMSI {
         Write-Host "Failed to download Python. The following exception was raised:" -ForegroundColor Red
         Write-Host $_.exception -ForegroundColor Red
 
-        Exit 1
+        throw
     }
 }
 
@@ -51,11 +51,9 @@ function Install-Python {
     if ($install.ExitCode -eq 0) {
         Write-Host "Installation completed successfully." -ForegroundColor Green
     } elseif ($install.ExitCode -eq 1602) {
-        Write-Host "Installer was exited by the user." -ForegroundColor Red
-        Exit 1
+        throw "Installer was exited by the user."
     } else {
-        Write-Host "Installation failed with exit code $install.ExitCode" -ForegroundColor Red
-        Exit 1
+        throw "Installation failed with exit code $install.ExitCode"
     }
 }
 
@@ -68,6 +66,7 @@ function Update-UserEnvironmentPath {
 }
 
 function Install-Virtualenv {
+    param()
     Write-StepTitle "Installing virtualenv"
     Invoke-Expression "pip install virtualenv --target $PSScriptRoot\virtualenv"
 }
@@ -81,4 +80,5 @@ if ($PythonExecutable.count -eq 0) {
 } else {
     Write-Host "Python 3.7.3 is already installed." -ForegroundColor Green
 }
-Install-Virtualenv
+
+Install-Virtualenv -ErrorAction Stop
